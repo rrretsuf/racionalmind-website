@@ -1,42 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rational Mind - Join the Waitlist</title>
+  <title>Rational Mind - Stopp das Grübeln mit KI</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="language-switcher">
+    <button class="lang-btn active" data-lang="de" aria-label="Sprache auf Deutsch ändern">DE</button>
+    <button class="lang-btn" data-lang="en" aria-label="Change language to English">EN</button>
+  </div>
   <main>
-    <!-- Hero Section -->
     <section class="hero">
       <div class="container">
-        <h2>Rational Mind</h2>
-        <h1>Analyze. Understand. Transcend.</h1>
-        <p class="hero-description">
-          Rational Mind cuts through analysis paralysis with an AI council that learns your patterns, delivers crystal-clear logic and step-by-step direction, all in total privacy.
+        <div class="logo-header">
+          <img id="header-logo" src="assets/logo.svg" alt="Rational Mind Logo">
+          <h2 data-translate-key="appTitle">Rational Mind</h2>
+        </div>
+        <h1 data-translate-key="headline">Stopp das Grübeln. Schaffe Klarheit. Entscheide Klug.</h1>
+        <p class="hero-description" data-translate-key="heroDescription">
+          Quält dich ständiges Grübeln? Verloren im Labyrinth der "Was wäre wenns"?
+          Rational Mind ist dein KI-Begleiter für eine ruhige, logische Perspektive. Erhalte Klarheit, genau dann, wenn du sie brauchst.
         </p>
-        
+
         <div id="message-container"></div>
-        
+
         <form id="waitlist-form">
+          <p class="waitlist-incentive" data-translate-key="waitlistIncentive">
+            <strong>Trag dich in die kostenlose Warteliste ein.</strong> Sei unter den Ersten, die Zugang erhalten und profitiere von exklusiven Vorteilen zum Start!
+          </p>
           <div class="form-group">
-            <input 
-              type="email" 
-              id="email" 
-              placeholder="Enter your email" 
+            <input
+              type="email"
+              id="email"
+              placeholder="E-Mail eintragen."
               required
-            >
-            <button type="submit" id="submit-btn">Join the Waitlist</button>
+              aria-label="E-Mail-Adresse für die Warteliste"
+              data-translate-key="emailPlaceholder"
+              data-translate-aria-key="emailAriaLabel" >
+            <button type="submit" id="submit-btn" data-translate-key="submitBtn">Sichere dir frühen Zugang!</button>
           </div>
-          <small>Launching soon &bull; Your data remains yours.</small>
+          <small data-translate-key="formSmallPrint">Start in 1 Monat &bull; Kostenlos eintragen &bull; Wir respektieren deine Privatsphäre.</small>
         </form>
       </div>
     </section>
   </main>
 
-  <!-- Supabase CDN script - REMOVED -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> -->
   <script src="script.js"></script>
 </body>
-</html> 
+</html>

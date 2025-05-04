@@ -3,9 +3,10 @@
   --color-dark: #050012;
   --color-darker: #030008;
   --color-accent: #2563EB;
+  --color-accent-border: #5CA9FF;
   --color-accent-hover: #1D4ED8;
   --color-accent-light: #93C5FD;
-  --color-white: rgba(255, 255, 255, 0.9);
+  --color-white: #FFFFFF;
   --color-light-gray: rgba(163, 163, 163, 0.8);
 }
 
@@ -42,7 +43,7 @@ main {
 h1 {
   font-size: clamp(1.8rem, 5.5vw + 1rem, 2.5rem);
   font-weight: 600;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.02em;
   color: var(--color-white);
@@ -50,9 +51,8 @@ h1 {
 
 h2 {
   font-size: clamp(1.1rem, 3.5vw + 0.6rem, 1.5rem);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--color-accent-light);
-  margin-bottom: 0.6rem;
 }
 
 p {
@@ -140,21 +140,20 @@ input::placeholder {
 
 button {
   padding: 12px 24px;
-  background-color: var(--color-accent-hover);
+  background-color: var(--color-accent);
   color: var(--color-white);
-  border: none;
+  border: 1px solid var(--color-accent-border);
   border-radius: 10px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s, box-shadow 0.2s, filter 0.2s;
+  transition: background-color 0.2s, filter 0.2s;
   font-size: 1rem;
-  box-shadow: 0 0 20px 5px rgba(37, 99, 235, 0.6);
+  filter: brightness(1.1);
 }
 
 button:hover {
-  background-color: var(--color-accent);
-  box-shadow: 0 0 25px 7px rgba(37, 99, 235, 0.7);
-  filter: brightness(1.1);
+  background-color: var(--color-accent-hover);
+  border: 1px solid var(--color-accent-light);
 }
 
 button:disabled {
@@ -211,12 +210,7 @@ button:disabled {
 
 /* Responsive */
 @media (min-width: 640px) {
-  h1 {
-  }
-  
-  h2 {
-  }
-  
+
   .form-group {
     flex-direction: row;
   }
@@ -242,4 +236,100 @@ button:disabled {
   .form-group {
     gap: 8px;
   }
-} 
+}
+
+/* Dodaj na konec obstoječe CSS datoteke */
+
+.waitlist-incentive {
+  color: var(--color-light-gray);
+  font-size: clamp(0.9rem, 2vw + 0.5rem, 1.05rem);
+  margin-bottom: 2rem;
+  font-weight: 500;
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.waitlist-incentive strong {
+  color: var(--color-white);
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+#waitlist-form {
+  margin-top: 1rem;
+}
+
+[aria-label]:not(button):not(input) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Add styles for the new logo header */
+.logo-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+#header-logo {
+  height: 2rem;
+  margin-right: 0.5rem;
+}
+
+/* Language Switcher */
+.language-switcher {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  z-index: 10;
+  background: rgba(30, 30, 46, 0.6);
+  padding: 5px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.lang-btn {
+  background: none;
+  border: none;
+  color: var(--color-light-gray);
+  cursor: pointer;
+  padding: 5px 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: color 0.2s, background-color 0.2s;
+  border-radius: 5px;
+}
+
+.lang-btn:hover {
+  color: var(--color-white);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.lang-btn.active {
+  color: var(--color-accent-light);
+  background-color: rgba(37, 99, 235, 0.2);
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .language-switcher {
+    top: 10px;
+    right: 10px;
+  }
+  .lang-btn {
+    font-size: 0.8rem;
+    padding: 4px 6px;
+  }
+}
+
+/* You might need to adjust existing styles for .container or .hero h2 if they conflict */
