@@ -1,13 +1,14 @@
-/* Global Styles */
 :root {
   --color-dark: #050012;
   --color-darker: #030008;
   --color-accent: #2563EB;
   --color-accent-border: #5CA9FF;
   --color-accent-hover: #1D4ED8;
-  --color-accent-light: #93C5FD;
+  --color-accent-light: #77B4F8; 
   --color-white: #FFFFFF;
   --color-light-gray: rgba(163, 163, 163, 0.8);
+  --color-off-white: rgba(230, 230, 230, 0.9);
+  --color-waitlist: #CCCCCC;
 }
 
 * {
@@ -55,7 +56,7 @@ h2 {
   color: var(--color-accent-light);
 }
 
-p {
+p { /* Global p style - to bomo morda morali preglasiti */
   margin-bottom: 1rem;
   font-size: clamp(0.9rem, 2vw + 0.5rem, 1.125rem);
 }
@@ -92,16 +93,43 @@ p {
   max-width: 600px;
 }
 
+.logo-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+#header-logo {
+  height: 2rem;
+  margin-right: 0.5rem;
+}
+
 .hero-description {
   color: var(--color-light-gray);
   margin-top: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem; 
   max-width: 500px;
   margin-left: auto;
   margin-right: auto;
+  font-size: clamp(0.9rem, 2vw + 0.5rem, 1.1rem); 
 }
 
-/* Form Styles */
+.hero-cta {
+  color: var(--color-waitlist); 
+  font-weight: 500; 
+  margin-top: 0; 
+  margin-bottom: 1.5rem; 
+  max-width: 500px; 
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(0.9rem, 2vw + 0.5rem, 1.05rem); 
+}
+
+.hero-cta strong {
+  font-weight: 600; 
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -118,7 +146,7 @@ p {
   opacity: 0.8;
 }
 
-input {
+input[type="email"] {
   padding: 16px 10px;
   background-color: rgba(30, 30, 46, 0.7);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -128,17 +156,17 @@ input {
   transition: background-color 0.2s, border-color 0.2s;
 }
 
-input:focus {
+input[type="email"]:focus {
   outline: none;
   border-color: var(--color-accent);
-  background-color: rgba(30, 30, 46, 0.9);
+  background-color: rgba(30, 30, 46,.9);
 }
 
-input::placeholder {
+input[type="email"]::placeholder {
   color: var(--color-light-gray);
 }
 
-button {
+button[type="submit"] {
   padding: 12px 24px;
   background-color: var(--color-accent);
   color: var(--color-white);
@@ -146,23 +174,22 @@ button {
   border-radius: 10px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s, filter 0.2s;
+  transition: background-color 0.2s, filter 0.2s, border-color 0.2s;
   font-size: 1rem;
   filter: brightness(1.1);
 }
 
-button:hover {
+button[type="submit"]:hover {
   background-color: var(--color-accent-hover);
-  border: 1px solid var(--color-accent-light);
+  border-color: var(--color-accent-light);
 }
 
-button:disabled {
+button[type="submit"]:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-/* Success/Error messages */
+/* Components: Messages & Toasts */
 #message-container {
   margin-bottom: 1rem;
   min-height: 40px;
@@ -174,19 +201,18 @@ button:disabled {
   font-size: 0.875rem;
 }
 
-.success {
+.message.success {
   background-color: rgba(52, 211, 153, 0.2);
   border: 1px solid rgb(52, 211, 153);
   color: rgb(167, 243, 208);
 }
 
-.error {
+.message.error {
   background-color: rgba(239, 68, 68, 0.2);
   border: 1px solid rgb(239, 68, 68);
   color: rgb(252, 165, 165);
 }
 
-/* Style for the Toast Notification */
 .toast-notification {
     position: fixed;
     bottom: 20px;
@@ -208,85 +234,7 @@ button:disabled {
     bottom: 30px;
 }
 
-/* Responsive */
-@media (min-width: 640px) {
-
-  .form-group {
-    flex-direction: row;
-  }
-  
-  input {
-    flex: 1;
-  }
-
-  .hero {
-    background-attachment: fixed;
-  }
-}
-
-/* Smaller screen adjustments */
-@media (max-width: 360px) {
-  .container {
-    padding: 0 16px;
-  }
-  input, button {
-    font-size: 0.875rem;
-    padding: 10px 14px;
-  }
-  .form-group {
-    gap: 8px;
-  }
-}
-
-/* Dodaj na konec obstoječe CSS datoteke */
-
-.waitlist-incentive {
-  color: var(--color-light-gray);
-  font-size: clamp(0.9rem, 2vw + 0.5rem, 1.05rem);
-  margin-bottom: 2rem;
-  font-weight: 500;
-  max-width: 450px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.waitlist-incentive strong {
-  color: var(--color-white);
-  font-weight: 600;
-  display: block;
-  margin-bottom: 0.25rem;
-}
-
-#waitlist-form {
-  margin-top: 1rem;
-}
-
-[aria-label]:not(button):not(input) {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Add styles for the new logo header */
-.logo-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-}
-
-#header-logo {
-  height: 2rem;
-  margin-right: 0.5rem;
-}
-
-/* Language Switcher */
+/* Components: Language Switcher */
 .language-switcher {
   position: absolute;
   top: 15px;
@@ -320,7 +268,21 @@ button:disabled {
   background-color: rgba(37, 99, 235, 0.2);
 }
 
-/* Mobile adjustments */
+/* Responsive Adjustments */
+@media (min-width: 640px) {
+  .form-group {
+    flex-direction: row;
+  }
+  
+  input[type="email"] {
+    flex: 1;
+  }
+
+  .hero {
+    background-attachment: fixed;
+  }
+}
+
 @media (max-width: 640px) {
   .language-switcher {
     top: 10px;
@@ -332,4 +294,15 @@ button:disabled {
   }
 }
 
-/* You might need to adjust existing styles for .container or .hero h2 if they conflict */
+@media (max-width: 360px) {
+  .container {
+    padding: 0 16px;
+  }
+  input[type="email"], button[type="submit"] {
+    font-size: 0.875rem;
+    padding: 10px 14px;
+  }
+  .form-group {
+    gap: 8px;
+  }
+}

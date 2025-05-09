@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rational Mind - Stopp das Grübeln mit KI</title>
+  <title data-translate-key="appTitle">Rational Mind</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="language-switcher">
-    <button class="lang-btn active" data-lang="de" aria-label="Sprache auf Deutsch ändern">DE</button>
-    <button class="lang-btn" data-lang="en" aria-label="Change language to English">EN</button>
+    <button class="lang-btn active" data-lang="en" aria-label="Change language to English">EN</button>
+    <button class="lang-btn" data-lang="de" aria-label="Sprache auf Deutsch ändern">DE</button>
   </div>
   <main>
     <section class="hero">
@@ -18,30 +19,27 @@
           <img id="header-logo" src="assets/logo.svg" alt="Rational Mind Logo">
           <h2 data-translate-key="appTitle">Rational Mind</h2>
         </div>
-        <h1 data-translate-key="headline">Stopp das Grübeln. Schaffe Klarheit. Entscheide Klug.</h1>
-        <p class="hero-description" data-translate-key="heroDescription">
-          Quält dich ständiges Grübeln? Verloren im Labyrinth der "Was wäre wenns"?
-          Rational Mind ist dein KI-Begleiter für eine ruhige, logische Perspektive. Erhalte Klarheit, genau dann, wenn du sie brauchst.
-        </p>
+        <h1 data-translate-key="headline">Stop Overthinking. Gain Clarity. Decide Wisely.</h1>
+        
+        <p class="hero-description" data-translate-key="heroDescription"></p>
+        
+        <p class="hero-cta" data-translate-key="waitlistIncentive"></p>
 
         <div id="message-container"></div>
 
         <form id="waitlist-form">
-          <p class="waitlist-incentive" data-translate-key="waitlistIncentive">
-            <strong>Trag dich in die kostenlose Warteliste ein.</strong> Sei unter den Ersten, die Zugang erhalten und profitiere von exklusiven Vorteilen zum Start!
-          </p>
           <div class="form-group">
             <input
               type="email"
               id="email"
-              placeholder="E-Mail eintragen."
+              placeholder="Enter your email."
               required
-              aria-label="E-Mail-Adresse für die Warteliste"
+              aria-label="Email address for the waitlist"
               data-translate-key="emailPlaceholder"
               data-translate-aria-key="emailAriaLabel" >
-            <button type="submit" id="submit-btn" data-translate-key="submitBtn">Sichere dir frühen Zugang!</button>
+            <button type="submit" id="submit-btn" data-translate-key="submitBtn">Secure early access!</button>
           </div>
-          <small data-translate-key="formSmallPrint">Start in 1 Monat &bull; Kostenlos eintragen &bull; Wir respektieren deine Privatsphäre.</small>
+          <small data-translate-key="formSmallPrint">Launch in 1 month &bull; Join for free &bull; We respect your privacy.</small>
         </form>
       </div>
     </section>
