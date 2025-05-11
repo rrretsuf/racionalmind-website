@@ -137,7 +137,7 @@ form.addEventListener('submit', async (event) => {
   emailInput.setCustomValidity('');
 
   try {
-    const response = await fetch('/api/submit-waitlist', {
+    const response = await fetch('/functions/api/submit-waitlist', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
