@@ -17,6 +17,7 @@ const translations = {
     emailPlaceholder: 'E-Mail eintragen.',
     emailAriaLabel: 'E-Mail-Adresse für die Warteliste',
     submitBtn: 'Sichere dir frühen Zugang!',
+    joiningText: 'Tritt bei...', // Prevod za "Joining..."
     formSmallPrint: 'Start in 1 Monat; Kostenlos eintragen; Wir respektieren deine Privatsphäre.',
     successMessage: 'Erfolgreich eingetragen! Wir melden uns bald.',
     errorMessage: 'Fehler: Bitte versuche es erneut oder kontaktiere den Support.',
@@ -30,6 +31,7 @@ const translations = {
     emailPlaceholder: 'Enter your email.',
     emailAriaLabel: 'Email address for the waitlist',
     submitBtn: 'Secure early access!',
+    joiningText: 'Joining...', // Prevod za "Joining..."
     formSmallPrint: 'Launch in 1 month; Join for free; We respect your privacy.',
     successMessage: 'Successfully registered! We will contact you soon.',
     errorMessage: 'Error: Please try again',
@@ -48,21 +50,28 @@ function setLanguage(lang) {
     const translation = translations[lang][key];
 
     if (translation !== undefined) {
-      if (key === 'waitlistIncentive' || key === 'heroCombinedDescription') {
+      // Ključi, ki VSEBUJEJO HTML in potrebujejo innerHTML
+      if (key === 'waitlistIncentive') { 
         element.innerHTML = translation;
-      } else if (element.tagName === 'INPUT' && key === 'emailPlaceholder') {
+      } 
+      // Obravnava za INPUT elemente (placeholder in aria-label)
+      else if (element.tagName === 'INPUT' && key === 'emailPlaceholder') {
         element.placeholder = translation;
       } else if (element.tagName === 'INPUT' && element.dataset.translateAriaKey) {
         const ariaKey = element.dataset.translateAriaKey;
         const ariaTranslation = translations[lang][ariaKey];
         if (ariaTranslation !== undefined) {
           element.setAttribute('aria-label', ariaTranslation);
+        } else {
+          console.warn(`ARIA translation key '${ariaKey}' not found for language '${lang}'. Element:`, element);
         }
-      } else {
+      } 
+      // VSI OSTALI elementi, ki NE vsebujejo HTML (uporabi textContent)
+      else {
         element.textContent = translation;
       }
     } else {
-      console.warn(`Translation key '${key}' not found for language '${lang}'.`);
+      console.warn(`Translation key '${key}' not found for language '${lang}'. Element:`, element);
     }
   });
 
@@ -71,7 +80,7 @@ function setLanguage(lang) {
   });
 
   localStorage.setItem('preferredLanguage', lang);
-  updateValidationMessages(lang);
+  updateValidationMessages(lang); // Klic funkcije, ki trenutno ne dela veliko, a je tu
 }
 
 langButtons.forEach(button => {
@@ -100,24 +109,29 @@ function showToast(message) {
   }, 3000);
 }
 
+// Ta funkcija trenutno samo počisti customValidity.
 function updateValidationMessages(lang) {
-  emailInput.setCustomValidity('');
+  emailInput.setCustomValidity(''); 
 }
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const email = emailInput.value.trim();
-  submitButton.disabled = true;
-  submitButton.innerText = 'Joining...';
-  messageContainer.innerHTML = '';
+  
   const currentLang = localStorage.getItem('preferredLanguage') || 'en';
+  const joiningText = translations[currentLang]?.joiningText || "Joining..."; // Uporabi preveden tekst ali privzetega
+  const submitBtnText = translations[currentLang]?.submitBtn || "Submit"; // Privzeti tekst za gumb
+
+  submitButton.disabled = true;
+  submitButton.innerText = joiningText;
+  messageContainer.innerHTML = '';
 
   if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-    showMessage(translations[currentLang].invalidEmail, 'error');
-    emailInput.setCustomValidity(translations[currentLang].invalidEmail);
+    showMessage(translations[currentLang]?.invalidEmail || "Invalid email.", 'error');
+    emailInput.setCustomValidity(translations[currentLang]?.invalidEmail || "Invalid email.");
     emailInput.reportValidity();
     submitButton.disabled = false;
-    submitButton.innerText = translations[currentLang].submitBtn;
+    submitButton.innerText = submitBtnText;
     return;
   }
   emailInput.setCustomValidity('');
@@ -131,31 +145,42 @@ form.addEventListener('submit', async (event) => {
       body: JSON.stringify({ email: email }),
     });
 
-    const result = await response.json();
-
-    if (!response.ok) {
-      let errorMessage = result.message;
-      if (!errorMessage) {
-        if (response.status === 409) {
-          errorMessage = 'This email is already on the waitlist.';
-        } else if (response.status === 400) {
-          errorMessage = 'Please provide a valid email address.';
-        } else {
-          errorMessage = `Server error: ${response.status}`;
-        }
+    const contentType = response.headers.get("content-type");
+    if (!response.ok || !contentType || !contentType.includes("application/json")) {
+      const textResponse = await response.text(); // Preberi kot tekst, da vidiš vsebino
+      let serverMessage = `Server error: ${response.status} ${response.statusText}.`;
+      if (textResponse) {
+         serverMessage += ` Response: ${textResponse.substring(0, 200)}${textResponse.length > 200 ? '...' : ''}`; // Pokaži del odgovora
       }
-      throw new Error(errorMessage);
+      // Poskusi parsirati JSON, če je bil morda poslan kljub napačnemu Content-Type ali statusu
+      try {
+         const errorResult = JSON.parse(textResponse); // Uporabi textResponse, ker response.json() morda ne bi deloval
+         if (errorResult && errorResult.message) {
+             serverMessage = errorResult.message;
+         }
+      } catch (e) {
+         // Ostane originalni serverMessage
+      }
+      throw new Error(serverMessage);
+    }
+    
+    const result = await response.json(); // Zdaj bi moral biti varen klic
+
+    // response.ok je že preverjen zgoraj, a dvojno preverjanje ne škodi, če result vsebuje error flag
+    if (result.error || (result.message && !response.status.toString().startsWith('2'))) { 
+         throw new Error(result.message || translations[currentLang]?.errorMessage || "An error occurred.");
     }
 
-    showToast(translations[currentLang].successMessage);
+
+    showToast(translations[currentLang]?.successMessage || "Success!");
     emailInput.value = '';
 
   } catch (error) {
     console.error('Error submitting email via API:', error);
-    showMessage(error.message || translations[currentLang].errorMessage, 'error');
+    showMessage(error.message || translations[currentLang]?.errorMessage || "An error occurred.", 'error');
   } finally {
     submitButton.disabled = false;
-    submitButton.innerText = translations[currentLang].submitBtn;
+    submitButton.innerText = submitBtnText;
   }
 });
 
@@ -163,11 +188,16 @@ emailInput.addEventListener('input', () => {
   const email = emailInput.value.trim();
   const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   submitButton.disabled = !isValid;
+  if (isValid) {
+     emailInput.setCustomValidity(''); // Počisti napako, ko uporabnik popravi vnos
+  }
 });
 
 const preferredLanguage = localStorage.getItem('preferredLanguage') || 'en';
 setLanguage(preferredLanguage);
 
-emailInput.addEventListener('input', () => {
-  emailInput.setCustomValidity('');
+emailInput.addEventListener('input', () => { // To je odveč, ker že imamo zgoraj. Lahko se odstrani.
+  if (emailInput.validity.valid) { // Počisti samo, če je vnos veljaven
+     emailInput.setCustomValidity('');
+  }
 });
