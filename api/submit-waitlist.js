@@ -1,61 +1,106 @@
-// api/submit-waitlist.js
-const { createClient } = require('@supabase/supabase-js');
+// functions/api/submit-waitlist.js
+import { createClient } from '@supabase/supabase-js';
 
-// Load Supabase credentials securely from environment variables
-// These MUST be set in your Vercel project settings for deployment
-// For local testing, they are read from the .env file (if you use `vercel dev`)
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY;
+export async function onRequestPost(context) {
+  // context vsebuje:
+  // - request: Objekt Request (standardni Fetch API)
+  // - env: Objekt z okoljskimi spremenljivkami (SUPABASE_URL, SUPABASE_ANON_KEY)
+  // - next: Funkcija za klic naslednjega middleware-a
+  // - params: Parametri iz poti URL-ja
+  // - waitUntil: Za podaljšanje življenjske dobe funkcije
 
-// Export the handler function for Vercel
-module.exports = async (req, res) => {
+  const { request, env } = context;
 
-  // Ensure environment variables are set (important check for deployed function)
-  if (!supabaseUrl || !supabaseAnonKey) {
+  // Preverite, ali so okoljske spremenljivke nastavljene
+  if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
     console.error('Server configuration error: Supabase credentials missing.');
-    return res.status(500).json({ message: 'Server configuration error.' });
+    return new Response(JSON.stringify({ message: 'Server configuration error.' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
-  // Initialize Supabase client server-side for this request
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-  // Allow only POST requests
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    return res.status(405).json({ message: 'Method Not Allowed' });
+  // Inicializacija Supabase klienta
+  // Preverite, ali je ta način inicializacije skladen z vašo verzijo @supabase/supabase-js in Cloudflare okoljem.
+  let supabase;
+  try {
+    supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+  } catch (e) {
+    console.error('Failed to initialize Supabase client:', e);
+    return new Response(JSON.stringify({ message: 'Server setup error with Supabase client.' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 
   try {
-    const { email } = req.body;
-
-    // Basic validation server-side
-    if (!email || typeof email !== 'string' || !/^[\s\S]*@[\s\S]*\.[\s\S]*$/.test(email)) {
-      return res.status(400).json({ message: 'Invalid email address provided.' });
+    let email;
+    try {
+      // Pridobivanje podatkov iz telesa zahteve (request body)
+      const body = await request.json();
+      email = body.email;
+    } catch (e) {
+      return new Response(JSON.stringify({ message: 'Invalid JSON payload.' }), {
+        status: 400, // Bad Request
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    // Insert into Supabase
+    // Osnovna validacija na strežniški strani
+    if (!email || typeof email !== 'string' || !/^[\s\S]*@[\s\S]*\.[\s\S]*$/.test(email)) {
+      return new Response(JSON.stringify({ message: 'Invalid email address provided.' }), {
+        status: 400, // Bad Request
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Vnos v Supabase
     const { data, error } = await supabase
-      .from('waitlist_entries') // MAKE SURE this table name is correct!
+      .from('waitlist_entries') // PREVERITE, da je ime tabele 'waitlist_entries' pravilno!
       .insert([{ email: email.trim() }]);
 
     if (error) {
-      // Handle potential duplicate email error specifically
-      if (error.code === '23505') { // PostgreSQL unique violation code
+      // Obravnava napake zaradi podvojenega emaila
+      if (error.code === '23505') { // PostgreSQL koda za kršitev unikatnosti
         console.warn(`Duplicate email attempt: ${email}`);
-        return res.status(409).json({ message: 'This email is already on the waitlist.' }); // 409 Conflict
+        return new Response(JSON.stringify({ message: 'This email is already on the waitlist.' }), {
+          status: 409, // Conflict
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
-      // Log other Supabase errors for debugging
+      // Logiranje ostalih Supabase napak za razhroščevanje
       console.error('Supabase error:', error);
-      throw new Error(error.message || 'Failed to add email to waitlist.');
+      return new Response(JSON.stringify({ message: error.message || 'Failed to add email to waitlist.' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
-    // Success
+    // Uspeh
     console.log(`Successfully added email: ${email}`);
-    return res.status(200).json({ message: 'Success! You are on the waitlist.' });
+    return new Response(JSON.stringify({ message: 'Success! You are on the waitlist.' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
 
-  } catch (error) {
-    // Log any other unexpected errors
-    console.error('Handler error:', error);
-    return res.status(500).json({ message: error.message || 'An unexpected server error occurred.' });
+  } catch (e) {
+    // Logiranje nepredvidenih napak
+    console.error('Handler error:', e);
+    return new Response(JSON.stringify({ message: e.message || 'An unexpected server error occurred.' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
-}; 
+}
+
+// Če želite obravnavati tudi druge metode ali vse metode z eno funkcijo:
+// export async function onRequest(context) {
+//   if (context.request.method === 'POST') {
+//     return onRequestPost(context);
+//   }
+//   // Obravnava drugih metod ali vrnitev 405
+//   return new Response(JSON.stringify({ message: 'Method Not Allowed' }), {
+//     status: 405,
+//     headers: { 'Content-Type': 'application/json', 'Allow': 'POST' },
+//   });
+// }
